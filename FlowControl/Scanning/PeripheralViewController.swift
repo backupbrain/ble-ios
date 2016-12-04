@@ -57,14 +57,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
         // Dispose of any resources that can be recreated.
     }
     
-    /**
-     Load UI elements
-     */
-    func loadUI() {
-        // load the UITableView
-        let nib = UINib(nibName: gatCellNibName, bundle: nil)
-        gattTableView.register(nib, forCellReuseIdentifier: gattCellReuseIdentifier)
-    }
     
     
     // MARK: BlePeripheralDelegate
@@ -93,13 +85,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
      Characteristic was written to.  Not needed in this UIView
      */
     func blePeripheral(valueWritten characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
-        
-    }
-    
-    /**
-     Characteristic was connected to.  Not needed in this UIView
-     */
-    func blePeripheral(connectedToCharacteristic characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
         
     }
     

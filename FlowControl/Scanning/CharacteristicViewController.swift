@@ -62,6 +62,29 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
     func loadUI() {
         broadcastNameLabel.text = blePeripheral.broadcastName
         identifierLabel.text = blePeripheral.peripheral.identifier.uuidString
+        
+        characteristicUuidlabel.text = blePeripheral.connectedCharacteristic.uuid.uuidString
+        readCharacteristicButton.isEnabled = true
+        
+        // characteristic is not readable
+        if !BlePeripheral.isCharacteristic(isReadable: blePeripheral.connectedCharacteristic) {
+            readCharacteristicButton.isHidden = true
+            characteristicValueText.isHidden = true
+        }
+        
+        // Characterisic is no writeable
+        if !BlePeripheral.isCharacteristic(isWriteable: blePeripheral.connectedCharacteristic) {
+            writeCharacteristicText.isHidden = true
+            writeCharacteristicButton.isHidden = true
+        }
+        
+        // Characterisic is notifiable
+        if BlePeripheral.isCharacteristic(isNotifiable: blePeripheral.connectedCharacteristic) {
+            blePeripheral.subscribeToCharacteristic()
+        }
+
+        
+        
     }
     
     /**
@@ -112,26 +135,6 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
         writeCharacteristicButton.isEnabled = true
     }
     
-    /**
-     Connected to Characteristic.  Update UI
-     */
-    func blePeripheral(connectedToCharacteristic characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
-        characteristicUuidlabel.text = blePeripheral.connectedCharacteristic.uuid.uuidString
-        readCharacteristicButton.isEnabled = true
-        
-        // characteristic is not readable
-        if !BlePeripheral.isCharacteristic(isReadable: characteristic) {
-            readCharacteristicButton.isHidden = true
-            characteristicValueText.isHidden = true
-        }
-        
-        // Characterisic is no writeable
-        if !BlePeripheral.isCharacteristic(isWriteable: characteristic) {
-            writeCharacteristicText.isHidden = true
-            writeCharacteristicButton.isHidden = true
-        }
-        
-    }
     
     /**
      Characteristic was discovered. Not needed in this UIView
@@ -167,7 +170,7 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
         print(stringValue)
         
         readCharacteristicButton.isEnabled =  true
-        characteristicValueText.insertText(stringValue)
+        characteristicValueText.insertText(stringValue + "\n")
         
         let stringLength = characteristicValueText.text.characters.count
         characteristicValueText.scrollRangeToVisible(NSMakeRange(stringLength-1, 0))

@@ -302,13 +302,16 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
             print(value.debugDescription)
             print(value.description)
             
-            let byteArray = [UInt8](value)
+            
+            //let byteArray = [UInt8](value)
             
             if let stringValue = String(data: value, encoding: .ascii) {
                 
                 print(stringValue)
                 
                 // received response from Peripheral
+                // FIXME: stringValue crashes on initial read
+                // FIXME: read isn't being pushed to UIView properly
                 if delegate != nil {
                     delegate.blePeripheral(characteristicRead: stringValue, characteristic: characteristic, blePeripheral: self)
                 }
@@ -319,7 +322,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                     print("new packet offset: \(packetOffset)")
                     print("new packet offset: \(packetOffset)")
                     if packetOffset < outboundByteArray.count {
-                        print("sending new packet: \(packetOffset)-\(byteArray.count)")
+                        //print("sending new packet: \(packetOffset)-\(byteArray.count)")
                         writePartialValue(value: outboundByteArray, offset: packetOffset)
                         
                     } else {

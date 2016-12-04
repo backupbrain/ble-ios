@@ -9,48 +9,42 @@
 import UIKit
 import CoreBluetooth
 
+/**
+ GATT Charactersitic Table View Cell
+ */
 class GattTableViewCell: UITableViewCell {
+
+    // MARK: UI Elements
     @IBOutlet weak var uuidLabel: UILabel!
     @IBOutlet weak var readableLabel: UILabel!
     @IBOutlet weak var writeableLabel: UILabel!
     @IBOutlet weak var notifiableLabel: UILabel!
     @IBOutlet weak var noAccessLabel: UILabel!
     
+    /**
+     Initialize cell
+     */
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
 
+    /**
+     Cell was selected
+     */
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
+    /**
+     Render the cell with Characteristic properties
+     */
     func displayCharacteristic(characteristic: CBCharacteristic) {
         uuidLabel.text = characteristic.uuid.uuidString
         
-        print(characteristic.uuid.uuidString)
-        
-        var isReadable = false
-        var isWriteable = false
-        var isNotifiable = false
-        
-        if (characteristic.properties.rawValue & CBCharacteristicProperties.read.rawValue) != 0 {
-            print("readable")
-            isReadable = true
-        }
-        
-        if (characteristic.properties.rawValue & CBCharacteristicProperties.write.rawValue) != 0 ||
-           (characteristic.properties.rawValue & CBCharacteristicProperties.writeWithoutResponse.rawValue) != 0 {
-            print("writable")
-            isWriteable = true
-        }
-        
-        if (characteristic.properties.rawValue & CBCharacteristicProperties.notify.rawValue) != 0 {
-            print("notifiable")
-            isNotifiable = true
-        }
+        let isReadable = BlePeripheral.isCharacteristic(isReadable: characteristic)
+        let isWriteable = BlePeripheral.isCharacteristic(isWriteable: characteristic)
+        let isNotifiable = BlePeripheral.isCharacteristic(isNotifiable: characteristic)
         
         readableLabel.isHidden = !isReadable
         writeableLabel.isHidden = !isWriteable

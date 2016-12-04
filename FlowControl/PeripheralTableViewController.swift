@@ -20,6 +20,7 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
     // Default unknown broadcast name
     let unknownBroadcastName = "(UNMARKED)"
     
+    // PeripheralTableViewCell reuse identifier
     let peripheralCellReuseIdentifier = "PeripheralTableViewCell"
     
     

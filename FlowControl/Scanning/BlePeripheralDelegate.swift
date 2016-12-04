@@ -34,15 +34,6 @@ protocol BlePeripheralDelegate: class {
     func blePeripheral(characteristicRead stringValue: String, characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
     
     /**
-     Characteristic was connected to
-     
-     - Parameters:
-        - characteristic: the connected Characteristic
-        - blePeripheral: the BlePeripheral
-     */
-    func blePeripheral(connectedToCharacteristic characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
-    
-    /**
      A subscription state has changed on a Characteristic
      
      - Parameters:

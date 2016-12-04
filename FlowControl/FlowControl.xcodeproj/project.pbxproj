@@ -14,12 +14,10 @@
 		7A0531821DDBF3D700A10508 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A0531801DDBF3D700A10508 /* LaunchScreen.storyboard */; };
 		7A05318B1DDBF3E800A10508 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A05318A1DDBF3E800A10508 /* CoreBluetooth.framework */; };
 		7A0531921DDBFCA000A10508 /* PeripheralTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0531901DDBFCA000A10508 /* PeripheralTableViewController.swift */; };
-		7A0531931DDBFCA000A10508 /* PeripheralTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A0531911DDBFCA000A10508 /* PeripheralTableViewController.xib */; };
 		7AB316AA1DF2926800A378D6 /* BlePeripheralDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB316A91DF2926800A378D6 /* BlePeripheralDelegate.swift */; };
 		7AB316AD1DF2927800A378D6 /* BlePeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB316AC1DF2927800A378D6 /* BlePeripheral.swift */; };
 		7AE503041DE50DBD005E121C /* CharacteristicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE503031DE50DBD005E121C /* CharacteristicViewController.swift */; };
 		7AF17CA31DE3A7E300148469 /* GattTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF17CA11DE3A7E300148469 /* GattTableViewCell.swift */; };
-		7AF17CA41DE3A7E300148469 /* GattTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7AF17CA21DE3A7E300148469 /* GattTableViewCell.xib */; };
 		7AF17CA61DE3AB1200148469 /* PeripheralTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF17CA51DE3AB1200148469 /* PeripheralTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,12 +31,10 @@
 		7A0531831DDBF3D700A10508 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A05318A1DDBF3E800A10508 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		7A0531901DDBFCA000A10508 /* PeripheralTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PeripheralTableViewController.swift; path = ../PeripheralTableViewController.swift; sourceTree = "<group>"; };
-		7A0531911DDBFCA000A10508 /* PeripheralTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PeripheralTableViewController.xib; path = ../PeripheralTableViewController.xib; sourceTree = "<group>"; };
 		7AB316A91DF2926800A378D6 /* BlePeripheralDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheralDelegate.swift; sourceTree = "<group>"; };
 		7AB316AC1DF2927800A378D6 /* BlePeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlePeripheral.swift; sourceTree = "<group>"; };
 		7AE503031DE50DBD005E121C /* CharacteristicViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacteristicViewController.swift; sourceTree = "<group>"; };
 		7AF17CA11DE3A7E300148469 /* GattTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GattTableViewCell.swift; sourceTree = "<group>"; };
-		7AF17CA21DE3A7E300148469 /* GattTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GattTableViewCell.xib; sourceTree = "<group>"; };
 		7AF17CA51DE3AB1200148469 /* PeripheralTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeripheralTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,8 +112,6 @@
 			children = (
 				7A05317B1DDBF3D700A10508 /* Main.storyboard */,
 				7A0531801DDBF3D700A10508 /* LaunchScreen.storyboard */,
-				7AF17CA21DE3A7E300148469 /* GattTableViewCell.xib */,
-				7A0531911DDBFCA000A10508 /* PeripheralTableViewController.xib */,
 				7A0531991DDD0E3800A10508 /* Views */,
 				7A0531971DDD0DCF00A10508 /* Controllers */,
 			);
@@ -202,10 +196,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0531821DDBF3D700A10508 /* LaunchScreen.storyboard in Resources */,
-				7AF17CA41DE3A7E300148469 /* GattTableViewCell.xib in Resources */,
 				7A05317F1DDBF3D700A10508 /* Assets.xcassets in Resources */,
 				7A05317D1DDBF3D700A10508 /* Main.storyboard in Resources */,
-				7A0531931DDBFCA000A10508 /* PeripheralTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
