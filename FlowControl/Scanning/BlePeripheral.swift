@@ -21,7 +21,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     
     // MARK: Flow control
     
-    // FLow control response
+    // Flow control response
     let flowControlMessage = "ready"
     
     // outbound value to be sent to the Characteristic
@@ -82,7 +82,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         self.peripheral = peripheral
         self.peripheral.delegate = self
         
-        
+        // check for services and the RSSI
         self.peripheral.readRSSI()
         self.peripheral.discoverServices(nil)
     }
@@ -91,7 +91,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      Get a broadcast name from an advertisementData packet.  This may be different than the actual broadcast name
      */
     static func getAlternateBroadcastFromAdvertisementData(advertisementData: [String : Any]) -> String? {
-        
+        // grab thekCBAdvDataLocalName from the advertisementData to see if there's an alternate broadcast name
         if advertisementData["kCBAdvDataLocalName"] != nil {
             return (advertisementData["kCBAdvDataLocalName"] as! String)
         }
@@ -118,7 +118,6 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         
         // get the data for the current offset
         outboundByteArray = Array(writeableValue.utf8)
-        //outboundByteArray = Array<Any>(writeableValue.withCString) as [UInt8]
         
         writePartialValue(value: outboundByteArray, offset: packetOffset)
     }
@@ -185,7 +184,6 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      */
     static func isCharacteristic(isReadable characteristic: CBCharacteristic) -> Bool {
         if (characteristic.properties.rawValue & CBCharacteristicProperties.read.rawValue) != 0 {
-            print("readable")
             return true
         }
         return false
@@ -201,13 +199,10 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      - returns: True if characteristic is writeable
      */
     static func isCharacteristic(isWriteable characteristic: CBCharacteristic) -> Bool {
-        print("testing if characteristic is writeable")
         if (characteristic.properties.rawValue & CBCharacteristicProperties.write.rawValue) != 0 ||
             (characteristic.properties.rawValue & CBCharacteristicProperties.writeWithoutResponse.rawValue) != 0 {
-            print("characteristic is writeable")
             return true
         }
-        print("characetiristic is not writeable")
         return false
     }
     
@@ -303,26 +298,23 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
             print(value.description)
             
             
-            //let byteArray = [UInt8](value)
+            // Note: if we need to work with byte arrays instead of Strings, we can do this
+            // let byteArray = [UInt8](value)
+            // or this:
+            // let byteArray:[UInt8] = Array(outboundValue.withCString)
             
             if let stringValue = String(data: value, encoding: .ascii) {
                 
                 print(stringValue)
                 
                 // received response from Peripheral
-                // FIXME: stringValue crashes on initial read
-                // FIXME: read isn't being pushed to UIView properly
                 if delegate != nil {
                     delegate.blePeripheral(characteristicRead: stringValue, characteristic: characteristic, blePeripheral: self)
                 }
 
                 if stringValue == flowControlMessage {
                     packetOffset += characteristicLength
-                    //let byteArray:[UInt8] = Array(outboundValue.withCString)
-                    print("new packet offset: \(packetOffset)")
-                    print("new packet offset: \(packetOffset)")
                     if packetOffset < outboundByteArray.count {
-                        //print("sending new packet: \(packetOffset)-\(byteArray.count)")
                         writePartialValue(value: outboundByteArray, offset: packetOffset)
                         
                     } else {
@@ -343,7 +335,9 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      */
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         print("services discovered")
+        // clear GATT profile - start with fresh services listing
         gattProfile.removeAll()
+        
         if error != nil {
             print("Discover service Error: \(error)")
         } else {
@@ -352,7 +346,6 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                 self.peripheral.discoverCharacteristics(nil, for: service)
             }
             print(peripheral.services!)
-            print("DONE")
         }
         
     }
@@ -381,7 +374,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                 
             }
             
-            // I want to check if the delegate supports an optional polymorphic method.  I'm not sure how to do that
+            // NOTE: I want to check if the delegate supports an optional polymorphic method.  I'm not sure how to do that
             /*
             guard let check  =
                 delegate.blePerihperal?(discoveredCharacteristics: characteristics, forService: service, peripheral: self) else {
@@ -409,8 +402,6 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         if delegate != nil {
             delegate.blePeripheral(readRssi: rssi, blePeripheral: self)
         }
-        
-        
     }
     
     

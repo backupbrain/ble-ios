@@ -164,10 +164,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
         print("returning table cell")
         let cell = tableView.dequeueReusableCell(withIdentifier: gattCellReuseIdentifier, for: indexPath) as! GattTableViewCell
         
-        
-        print("section: indexPath.section")
-        print("row: indexPath.row")
-        print(indexPath)
         let section = indexPath.section
         let row = indexPath.row
         
@@ -226,8 +222,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
         if let indexPath = gattTableView.indexPathForSelectedRow {
             let selectedSection = indexPath.section
             let selectedRow = indexPath.row
-            
-            print("Selected Row: \(selectedRow)")
             
             let characteristicViewController = segue.destination as! CharacteristicViewController
             

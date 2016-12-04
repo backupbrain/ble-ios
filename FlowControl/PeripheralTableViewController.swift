@@ -236,7 +236,6 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
         stopBleScan()
         
         let selectedRow = indexPath.row
-        print("Row: \(selectedRow)")
         
         // if connection is not possible, deselect row
         if selectedRow < blePeripherals.count {
