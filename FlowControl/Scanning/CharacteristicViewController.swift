@@ -48,13 +48,6 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
         loadUI()
         
     }
-
-    /**
-     Ran out of memory.
-     */
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
     
     /**
      Load UI elements
@@ -136,20 +129,6 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
     }
     
     
-    /**
-     Characteristic was discovered. Not needed in this UIView
-     */
-    func blePerihperal(discoveredCharacteristics characteristics: [CBCharacteristic], forService: CBService, blePeripheral: BlePeripheral) {
-        
-    }
-    
-    /**
-     RSSI read.  Not needed in this UIView
-     */
-    func blePeripheral(readRssi rssi: NSNumber, blePeripheral: BlePeripheral) {
-        
-    }
-    
     
     /**
      Characteristic subscription status changed.  Update UI
@@ -191,8 +170,7 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
         // disconnected.  Leave
         print("disconnected")
         if let navController = navigationController {
-            navController.popViewController(animated: true)
-            navController.popViewController(animated: true)
+            navController.popToRootViewController(animated: true)
             dismiss(animated: true, completion: nil)
         }
         

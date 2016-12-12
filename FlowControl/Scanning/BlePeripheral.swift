@@ -53,7 +53,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     var connectedCharacteristic:CBCharacteristic!
 
     // delegate
-    var delegate:BlePeripheralDelegate!
+    var delegate:BlePeripheralDelegate?
     
     
     
@@ -99,7 +99,9 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     }
     
     func readValue() {
-        self.peripheral.readValue(for: connectedCharacteristic)
+        if let connectedCharacteristic = connectedCharacteristic {
+            self.peripheral.readValue(for: connectedCharacteristic)
+        }
     }
     
     
@@ -132,26 +134,30 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      
      */
     func writePartialValue(value: [UInt8], offset: Int) {
-        // don't go past the total value size
-        var end =  offset + characteristicLength
-        
-        if end > outboundByteArray.count {
-            end = outboundByteArray.count
+        if let connectedCharacteristic = connectedCharacteristic {
+            // don't go past the total value size
+            var end =  offset + characteristicLength
+            
+            if end > outboundByteArray.count {
+                end = outboundByteArray.count
+            }
+            
+            
+            let transmissableValue = Data(Array(outboundByteArray[offset..<end]))
+            
+            print("writing partial value:  \(offset)-\(end)")
+            print(transmissableValue)
+            
+            var writeType = CBCharacteristicWriteType.withResponse
+            if BlePeripheral.isCharacteristic(isWriteableWithoutResponse: connectedCharacteristic) {
+                writeType = CBCharacteristicWriteType.withoutResponse
+            }
+            
+            peripheral.writeValue(transmissableValue, for: connectedCharacteristic, type: writeType)
+            print("write request sent")
+        } else {
+            print("no connected characteristic yet")
         }
-        
-        
-        let transmissableValue = Data(Array(outboundByteArray[offset..<end]))
-        
-        print("writing partial value:  \(offset)-\(end)")
-        print(transmissableValue)
-        
-        var writeType = CBCharacteristicWriteType.withResponse
-        if BlePeripheral.isCharacteristic(isWriteableWithoutResponse: connectedCharacteristic) {
-            writeType = CBCharacteristicWriteType.withoutResponse
-        }
-        
-        peripheral.writeValue(transmissableValue, for: connectedCharacteristic, type: writeType)
-        print("write request sent")
         
     }
     
@@ -161,7 +167,9 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      When change is successful, delegate.subscriptionStateChanged() called
      */
     func subscribeToCharacteristic() {
-        self.peripheral.setNotifyValue(true, for: connectedCharacteristic)
+        if let connectedCharacteristic = connectedCharacteristic {
+            self.peripheral.setNotifyValue(true, for: connectedCharacteristic)
+        }
     }
     
     /**
@@ -170,7 +178,9 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      When change is successful, delegate.subscriptionStateChanged() called
      */
     func unsubscribeFromCharacteristic() {
-        self.peripheral.setNotifyValue(false, for: connectedCharacteristic)
+        if let connectedCharacteristic = connectedCharacteristic {
+            self.peripheral.setNotifyValue(false, for: connectedCharacteristic)
+        }
     }
     
     
@@ -268,9 +278,8 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         
     
         
-        if delegate != nil {
-            delegate.blePeripheral(subscriptionStateChanged: characteristic.isNotifying, characteristic: connectedCharacteristic, blePeripheral: self)
-        }
+        delegate?.blePeripheral?(subscriptionStateChanged: characteristic.isNotifying, characteristic: connectedCharacteristic, blePeripheral: self)
+        
         
         if let errorValue = error {
             print("error subscribing to notification: ")
@@ -308,9 +317,8 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                 print(stringValue)
                 
                 // received response from Peripheral
-                if delegate != nil {
-                    delegate.blePeripheral(characteristicRead: stringValue, characteristic: characteristic, blePeripheral: self)
-                }
+                delegate?.blePeripheral?(characteristicRead: stringValue, characteristic: characteristic, blePeripheral: self)
+                
 
                 if stringValue == flowControlMessage {
                     packetOffset += characteristicLength
@@ -320,9 +328,8 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                     } else {
                         print("value write complete")
                         // done writing message
-                        if delegate != nil {
-                            delegate.blePeripheral(valueWritten: characteristic, blePeripheral: self)
-                        }
+                        delegate?.blePeripheral?(valueWritten: characteristic, blePeripheral: self)
+                        
                     }
                 }
             }
@@ -371,23 +378,9 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
             print("characteristics found: \(characteristics.count)")
             for characteristic in characteristics {
                 print("-> \(characteristic.uuid.uuidString)")
-                
             }
             
-            // NOTE: I want to check if the delegate supports an optional polymorphic method.  I'm not sure how to do that
-            /*
-            guard let check  =
-                delegate.blePerihperal?(discoveredCharacteristics: characteristics, forService: service, peripheral: self) else {
-            }
-            
-            
-            if delegate != nil && delegate.responds(to: Selector("blePeripheral:discoverCharacteristics:forService:peripheral")) {
-            }
-            */
-            
-            if delegate != nil {
-                delegate.blePerihperal(discoveredCharacteristics: characteristics, forService: service, blePeripheral: self)
-            }
+            delegate?.blePerihperal?(discoveredCharacteristics: characteristics, forService: service,blePeripheral: self)
         }
         
     }
@@ -399,9 +392,8 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
         print("RSSI: \(RSSI.stringValue)")
         rssi = RSSI
-        if delegate != nil {
-            delegate.blePeripheral(readRssi: rssi, blePeripheral: self)
-        }
+        delegate?.blePeripheral?(readRssi: rssi, blePeripheral: self)
+        
     }
     
     

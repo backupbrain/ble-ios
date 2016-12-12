@@ -22,21 +22,6 @@ class GattTableViewCell: UITableViewCell {
     @IBOutlet weak var noAccessLabel: UILabel!
     
     /**
-     Initialize cell
-     */
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    /**
-     Cell was selected
-     */
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
-    /**
      Render the cell with Characteristic properties
      */
     func displayCharacteristic(characteristic: CBCharacteristic) {

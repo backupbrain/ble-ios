@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Scanning/CharacteristicViewController.swift"
-            timestampString = "502515902.878286"
+            timestampString = "503259953.178118"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
             landmarkName = "CharacteristicViewController"
             landmarkType = "3">
          </BreakpointContent>

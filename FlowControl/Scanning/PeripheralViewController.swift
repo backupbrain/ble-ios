@@ -49,15 +49,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
         centralManager.connect(blePeripheral.peripheral)
     }
     
-    /**
-     Ran out of memory
-     */
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
     
     // MARK: BlePeripheralDelegate
     
@@ -73,26 +64,6 @@ class PeripheralViewController: UIViewController, UITableViewDataSource, UITable
      */
     func blePeripheral(readRssi rssi: NSNumber, blePeripheral: BlePeripheral) {
         rssiLabel.text = rssi.stringValue
-    }
-    
-    /**
-    Characteristic was read.  Not needed in this UIView
-     */
-    func blePeripheral(characteristicRead stringValue: String, characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
-    }
-    
-    /**
-     Characteristic was written to.  Not needed in this UIView
-     */
-    func blePeripheral(valueWritten characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
-        
-    }
-    
-    /**
-     Characteristic subscription state changed.  Not needed in this UIView
-     */
-    func blePeripheral(subscriptionStateChanged subscribed: Bool, characteristic: CBCharacteristic, blePeripheral: BlePeripheral) {
-        
     }
     
     

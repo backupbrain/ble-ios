@@ -12,7 +12,7 @@ import CoreBluetooth
 /**
   BlePeripheral relays important status changes from BlePeripheral
  */
-protocol BlePeripheralDelegate: class {
+@objc protocol BlePeripheralDelegate: class {
     
     /**
      Value written to Characteristic
@@ -21,7 +21,7 @@ protocol BlePeripheralDelegate: class {
         - characteristic: the Characteristic that was written to
         - blePeripheral: the BlePeripheral
      */
-    func blePeripheral(valueWritten characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
+    @objc optional func blePeripheral(valueWritten characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
     
     /**
      Characteristic was read
@@ -31,7 +31,7 @@ protocol BlePeripheralDelegate: class {
         - characteristic: the Characteristic that was read
         - blePeripheral: the BlePeripheral
      */
-    func blePeripheral(characteristicRead stringValue: String, characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
+    @objc optional func blePeripheral(characteristicRead stringValue: String, characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
     
     /**
      A subscription state has changed on a Characteristic
@@ -41,7 +41,7 @@ protocol BlePeripheralDelegate: class {
         - characteristic: the Characteristic that was subscribed or unsubscribed from
         - blePeripheral: the BlePeripheral
      */
-    func blePeripheral(subscriptionStateChanged subscribed: Bool, characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
+    @objc optional func blePeripheral(subscriptionStateChanged subscribed: Bool, characteristic: CBCharacteristic, blePeripheral: BlePeripheral)
     
     /**
      Characteristics were discovered for a Service
@@ -51,7 +51,7 @@ protocol BlePeripheralDelegate: class {
         - forService: the Service these Characteristics are under
         - blePeripheral: the BlePeripheral
      */
-    func blePerihperal(discoveredCharacteristics characteristics: [CBCharacteristic], forService: CBService, blePeripheral: BlePeripheral)
+    @objc optional func blePerihperal(discoveredCharacteristics characteristics: [CBCharacteristic], forService: CBService, blePeripheral: BlePeripheral)
     
     /**
      RSSI was read for a Peripheral
@@ -60,5 +60,5 @@ protocol BlePeripheralDelegate: class {
         - rssi: the RSSI
         - blePeripheral: the BlePeripheral
      */
-    func blePeripheral(readRssi rssi: NSNumber, blePeripheral: BlePeripheral)
+    @objc optional func blePeripheral(readRssi rssi: NSNumber, blePeripheral: BlePeripheral)
 }

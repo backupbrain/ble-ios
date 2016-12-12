@@ -51,14 +51,6 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
         
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
-
-    /**
-     Ran out of memory.
-     */
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     
     /**
@@ -137,6 +129,13 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
         
         // don't list if the Peripheral does not have  name
         
+        
+        // diagnostic stuff: print out advertising data
+        for (key, value) in advertisementData {
+            print("\(key): \(value)")
+        }
+
+        
             var peripheralFound = false
             for blePeripheral in blePeripherals {
                 if blePeripheral.peripheral.identifier == peripheral.identifier {
@@ -147,6 +146,8 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
             
             // don't duplicate discovered devices
             if !peripheralFound {
+                
+                print(advertisementData)
                 
                 // Broadcast name in advertisement data may be different than the actual broadcast name
                 // It's ideal to use the advertisement data version as it's supported on programmable bluetooth devices
@@ -160,6 +161,7 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
                         }
                     }
                 }
+                
                 
                 // if the device is not connectable, then there's no point in listing it
                 let isConnectable = advertisementData["kCBAdvDataIsConnectable"] as! Bool
