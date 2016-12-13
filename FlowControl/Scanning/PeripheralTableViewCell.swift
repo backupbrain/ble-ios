@@ -15,15 +15,15 @@ import CoreBluetooth
 class PeripheralTableViewCell: UITableViewCell {
     
     // MARK: UI elements
-    @IBOutlet weak var broadcastNameLabel: UILabel!
+    @IBOutlet weak var advertisedNameLabel: UILabel!
     @IBOutlet weak var identifierLabel: UILabel!
     @IBOutlet weak var rssiLabel: UILabel!
     
     /**
      Render Cell with Peripheral properties
      */
-    func displayPeripheral(blePeripheral: BlePeripheral) {
-        broadcastNameLabel.text = blePeripheral.broadcastName
+    func renderPeripheral(blePeripheral: BlePeripheral) {
+        advertisedNameLabel.text = blePeripheral.advertisedName
         identifierLabel.text = blePeripheral.peripheral.identifier.uuidString
         rssiLabel.text = blePeripheral.rssi.stringValue
     }

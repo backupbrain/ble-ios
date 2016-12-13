@@ -10,7 +10,7 @@ import UIKit
 import CoreBluetooth
 
 /**
-  BlePeripheral relays important status changes from BlePeripheral
+  BlePeripheralDelegate relays important status changes from BlePeripheral
  */
 @objc protocol BlePeripheralDelegate: class {
     

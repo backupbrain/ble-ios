@@ -12,49 +12,52 @@ import CoreBluetooth
 /**
  This view lists Peripherals during a Bluetooth Low Energy Scan
  */
-class PeripheralTableViewController: UITableViewController, CBCentralManagerDelegate, CBPeripheralManagerDelegate {
+class PeripheralTableViewController: UITableViewController, CBCentralManagerDelegate {
     
     // MARK: UI Elements
     @IBOutlet weak var scanButton: UIButton!
     
-    // Default unknown broadcast name
-    let unknownBroadcastName = "(UNMARKED)"
+    // Default unknown advertisement name
+    let unknownAdvertisedName = "(UNMARKED)"
     
     // PeripheralTableViewCell reuse identifier
-    let peripheralCellReuseIdentifier = "PeripheralTableViewCell"
+    let peripheralCellReusedentifier = "PeripheralTableViewCell"
     
     
     // MARK: Scan Properties
     
-    // scan timeout in seconds
-    let scanTimeout_s = 5;
+    // total scan time
+    let scanTimeout_s = 5; // seconds
     
-    // Current scan countdown
+    // current countdown
     var scanCountdown = 0
     
-    // Scan timer
+    // scan timer
     var scanTimer:Timer!
     
     // Central Bluetooth Manager
     var centralManager:CBCentralManager!
     
-    // Discovered Bluetooth Peripherals
+    // discovered peripherals
     var blePeripherals = [BlePeripheral]()
     
     
     
-    /**
-     View loaded.  Start Bluetooth radio.
-     */
+    
+    //let perihperalSegueIdentifier = "ShowPeripheralSegue"
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("Initializing central manager")
         centralManager = CBCentralManager(delegate: self, queue: nil)
+        
     }
     
     
     /**
-    User touched Scan Button.  Start or stop Bluetooth scan
+     User touched the "Scan/Stop" button
      */
     @IBAction func onScanButtonClicked(_ sender: UIButton) {
         print("scan button clicked")
@@ -65,10 +68,10 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
             startBleScan()
         }
     }
-
+    
     
     /**
-     Start Bluetooth Scan.  Update UI
+     Scan for Bluetooth peripherals
      */
     func startBleScan() {
         scanButton.setTitle("Stop", for: UIControlState.normal)
@@ -76,24 +79,31 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
         tableView.reloadData()
         print ("discovering devices")
         scanCountdown = scanTimeout_s
-        scanTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(onScanCounterUpdated), userInfo: nil, repeats: true)
+        scanTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(updateScanCounter), userInfo: nil, repeats: true)
         
-        centralManager.scanForPeripherals(withServices: nil, options: nil)
+        if let centralManager = centralManager {
+            centralManager.scanForPeripherals(withServices: nil, options: nil)
+        }
+        
     }
     
     /**
-    Stop the Bluetooth Scan.  Update UI
+     Stop scanning for Bluetooth Peripherals
      */
     func stopBleScan() {
-        centralManager!.stopScan()
+        if let centralManager = centralManager {
+            centralManager.stopScan()
+        }
         scanTimer.invalidate()
+        scanCountdown = 0
         scanButton.setTitle("Start", for: UIControlState.normal)
     }
     
+    
     /**
-     Scan countdown timer update.  Update UI
+     Update the scan countdown timer
      */
-    func onScanCounterUpdated() {
+    func updateScanCounter() {
         //you code, this is an example
         if scanCountdown > 0 {
             print("\(scanCountdown) seconds until Ble Scan ends")
@@ -103,81 +113,63 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
         }
     }
     
-
-    /**
-     Peripheral Manager updated state.  Not needed in this UIView
-     */
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        // do nothing
-    }
-
+    
     
     // MARK:  CBCentralManagerDelegate Functions
     
     /**
-     centralManager is called each time a new Peripheral is discovered
+     New Peripheral discovered
      
-     - parameters
+     - Parameters
      - central: the CentralManager for this UIView
-     - peripheral: A discovered Peripheral
-     - advertisementData: The Bluetooth advertisement data discevered with the Peripheral
+     - peripheral: a discovered Peripheral
+     - advertisementData: the Bluetooth GAP data discovered
      - rssi: the radio signal strength indicator for this Peripheral
      */
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         //print("Discovered \(peripheral.name)")
         print("Discovered \(peripheral.identifier.uuidString) (\(peripheral.name))")
         
-        // don't list if the Peripheral does not have  name
         
         
-        // diagnostic stuff: print out advertising data
-        for (key, value) in advertisementData {
-            print("\(key): \(value)")
+        // check if this peripheral has already been discovered
+        var peripheralFound = false
+        for blePeripheral in blePeripherals {
+            if blePeripheral.peripheral.identifier == peripheral.identifier {
+                peripheralFound = true
+                break
+            }
         }
-
         
-            var peripheralFound = false
-            for blePeripheral in blePeripherals {
-                if blePeripheral.peripheral.identifier == peripheral.identifier {
-                    peripheralFound = true
-                    break
+        
+        // don't duplicate discovered devices
+        if !peripheralFound {
+            
+            print(advertisementData)
+            
+            // Broadcast name in advertisement data may be different than the actual broadcast name
+            // It's ideal to use the advertisement data version as it's supported on programmable bluetooth devices
+            var advertisedName = unknownAdvertisedName
+            if let alternateName = BlePeripheral.getNameFromAdvertisementData(advertisementData: advertisementData) {
+                advertisedName = alternateName
+            } else {
+                if let peripheralName = peripheral.name {
+                    advertisedName = peripheralName
                 }
             }
             
-            // don't duplicate discovered devices
-            if !peripheralFound {
-                
-                print(advertisementData)
-                
-                // Broadcast name in advertisement data may be different than the actual broadcast name
-                // It's ideal to use the advertisement data version as it's supported on programmable bluetooth devices
-                var broadcastName = unknownBroadcastName
-                if let alternateName = BlePeripheral.getAlternateBroadcastFromAdvertisementData(advertisementData: advertisementData) {
-                    if alternateName != "" {
-                        broadcastName = alternateName
-                    } else {
-                        if let peripheralName = peripheral.name{
-                            broadcastName = peripheralName
-                        }
-                    }
-                }
-                
-                
-                // if the device is not connectable, then there's no point in listing it
-                let isConnectable = advertisementData["kCBAdvDataIsConnectable"] as! Bool
-                if (isConnectable) {
-                    let blePeripheral = BlePeripheral(delegate: nil, peripheral: peripheral)
-                    blePeripheral.rssi = RSSI
-                    blePeripheral.broadcastName = broadcastName
-                    blePeripherals.append(blePeripheral)
-                    tableView.reloadData()
-                    
-                }
-                
+            // don't display peripherals that can't be connected to
+            if BlePeripheral.isConnectable(advertisementData: advertisementData) {
+                let blePeripheral = BlePeripheral(delegate: nil, peripheral: peripheral)
+                blePeripheral.rssi = RSSI
+                blePeripheral.advertisedName = advertisedName
+                blePeripherals.append(blePeripheral)
+                tableView.reloadData()
             }
+            
+        }
         
     }
-    
     
     
     
@@ -188,17 +180,19 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
      - central: the reference to the central
      */
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        print("Central Manager updated: checking state")
+        
         switch (central.state) {
         case .poweredOn:
-            print ("BLE Hardware powered on and ready")
+            print("BLE Hardware powered on and ready")
             scanButton.isEnabled = true
-            //navigationController
         default:
-            scanButton.isEnabled = false
-            print ("Ble not unavailable")
+            print("Bluetooth unavailable")
         }
     }
-
+    
+    
+    
     
     // MARK: - Table view data source
     
@@ -208,53 +202,46 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     /**
      Return number of Peripheral cells
      */
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return blePeripherals.count
     }
-
+    
     
     /**
      Return rendered Peripheral cell
      */
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: peripheralCellReuseIdentifier, for: indexPath) as! PeripheralTableViewCell
+        print("setting up table cell")
+        let cell = tableView.dequeueReusableCell(withIdentifier: peripheralCellReusedentifier, for: indexPath) as! PeripheralTableViewCell
         
-        // fetches the appropritae peripheral for the data source layout
-        let blePeripheral = blePeripherals[indexPath.row]
-
-        cell.displayPeripheral(blePeripheral: blePeripheral)
-
+        // fetch the appropritae peripheral for the data source layout
+        let peripheral = blePeripherals[indexPath.row]
+        cell.renderPeripheral(blePeripheral: peripheral)
+        
+        
         return cell
     }
     
-    /**
-     User selected a Peripheral.  Update UI
-     */
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         stopBleScan()
         
         let selectedRow = indexPath.row
-        
-        // if connection is not possible, deselect row
-        if selectedRow < blePeripherals.count {
-            tableView.deselectRow(at: indexPath, animated: true)
-        }
+        print("Row: \(selectedRow)")
         
         print(blePeripherals[selectedRow])
     }
     
- 
-    // MARK: Navigation
     
-    /**
-     Prepare for segue.  Populate next UIView with necessary information
-     */
+    
+    
+    
+    // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
         let peripheralViewController = segue.destination as! PeripheralViewController
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
             let selectedRow = selectedIndexPath.row
@@ -264,14 +251,15 @@ class PeripheralTableViewController: UITableViewController, CBCentralManagerDele
                 peripheralViewController.centralManager = centralManager
                 peripheralViewController.blePeripheral = blePeripherals[selectedRow]
             }
-
+            
             
             tableView.deselectRow(at: selectedIndexPath, animated: true)
         }
         
+        
     }
-
     
-
+    
+    
     
 }

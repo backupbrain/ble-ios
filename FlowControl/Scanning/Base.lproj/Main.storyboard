@@ -22,19 +22,19 @@
                                 <rect key="frame" x="0.0" y="28" width="320" height="70"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GSe-KS-GnD" id="Goo-hY-kjf">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="69"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Peripheral Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VYR-U4-s64">
-                                            <rect key="frame" x="8" y="8" width="303" height="21"/>
+                                            <rect key="frame" x="8" y="8" width="259" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <accessibility key="accessibilityConfiguration" identifier="broadcastNameLabel"/>
+                                            <accessibility key="accessibilityConfiguration" identifier="advertisedNameLabel"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="MAC Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="6" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zQM-Vu-ZVg">
-                                            <rect key="frame" x="8" y="33" width="353" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Identifier" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="6" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zQM-Vu-ZVg">
+                                            <rect key="frame" x="8" y="32" width="298" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <accessibility key="accessibilityConfiguration" identifier="identifierLabel"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -53,7 +53,7 @@
                                 </tableViewCellContentView>
                                 <accessibility key="accessibilityConfiguration" identifier="PeripheralTableViewCell"/>
                                 <connections>
-                                    <outlet property="broadcastNameLabel" destination="VYR-U4-s64" id="qV1-YU-Jzm"/>
+                                    <outlet property="advertisedNameLabel" destination="VYR-U4-s64" id="L9r-oV-0aQ"/>
                                     <outlet property="identifierLabel" destination="zQM-Vu-ZVg" id="e21-RS-JVt"/>
                                     <outlet property="rssiLabel" destination="Z5q-Rj-sbv" id="JnM-PJ-7lp"/>
                                     <segue destination="6fs-5S-ALx" kind="show" id="zjB-l5-zZY"/>
@@ -84,7 +84,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4P0-mW-lnK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="205.59999999999999" y="123.68815592203899"/>
+            <point key="canvasLocation" x="204.375" y="123.59154929577466"/>
         </scene>
         <!--Peripheral-->
         <scene sceneID="8kw-pT-6rr">
@@ -197,7 +197,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Peripheral" id="nIK-Mi-OTF"/>
                     <connections>
-                        <outlet property="broadcastNameLabel" destination="69l-6z-aKa" id="DTf-p0-Kbg"/>
+                        <outlet property="advertisedNameLabel" destination="69l-6z-aKa" id="oLu-DQ-u3U"/>
                         <outlet property="gattProfileTableView" destination="XXk-lT-aKP" id="2KK-q2-QmG"/>
                         <outlet property="gattTableView" destination="XXk-lT-aKP" id="4Ns-hq-9W8"/>
                         <outlet property="identifierLabel" destination="7EG-uL-kGV" id="iDW-EF-AqI"/>
@@ -220,7 +220,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Broadcast Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VNo-WI-zj0">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Advertised Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VNo-WI-zj0">
                                 <rect key="frame" x="16" y="72" width="288" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <accessibility key="accessibilityConfiguration" identifier="broadcastNameLabel"/>
@@ -273,7 +273,7 @@
                                 <accessibility key="accessibilityConfiguration" identifier="writeCharacteristicButton"/>
                                 <state key="normal" title="Write"/>
                                 <connections>
-                                    <action selector="onWriteCharacteristicButtonTouchUp:" destination="GH7-Cy-70i" eventType="touchUpInside" id="QSS-Cy-JLO"/>
+                                    <action selector="onWriteCharacteristicButtonTouched:" destination="GH7-Cy-70i" eventType="primaryActionTriggered" id="vAB-Na-0dI"/>
                                 </connections>
                             </button>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5h5-To-1E0">
@@ -281,7 +281,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <accessibility key="accessibilityConfiguration" identifier="subscribeToNotificationSwitch"/>
                                 <connections>
-                                    <action selector="onSubscribeToNotificationSwitchTouchUp:" destination="GH7-Cy-70i" eventType="valueChanged" id="it0-uL-ejx"/>
+                                    <action selector="onSubscriptionToNotificationSwitchChanged:" destination="GH7-Cy-70i" eventType="valueChanged" id="SxR-Ap-TRF"/>
                                 </connections>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Subscribe to Characteristic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uxt-Qc-HdN">
@@ -299,18 +299,19 @@
                                 </accessibility>
                                 <state key="normal" title="Read"/>
                                 <connections>
-                                    <action selector="onReadCharacteristicButtonTouchUp:" destination="GH7-Cy-70i" eventType="touchUpInside" id="jDA-AT-n1P"/>
+                                    <action selector="onReadCharacteristicButtonTouched:" destination="GH7-Cy-70i" eventType="primaryActionTriggered" id="cY8-ty-M73"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="broadcastNameLabel" destination="VNo-WI-zj0" id="Jb2-lH-gFC"/>
+                        <outlet property="advertisedNameLabel" destination="VNo-WI-zj0" id="RbZ-L5-9lm"/>
                         <outlet property="characteristicUuidlabel" destination="gWf-Ng-eYS" id="e1r-8l-Dca"/>
                         <outlet property="characteristicValueText" destination="XGA-RQ-HJh" id="OPt-yG-2r0"/>
                         <outlet property="identifierLabel" destination="57D-ph-cA1" id="v0D-Qr-ce9"/>
                         <outlet property="readCharacteristicButton" destination="Az0-R0-vGV" id="07a-wF-jie"/>
+                        <outlet property="subscribeToNotificationLabel" destination="Uxt-Qc-HdN" id="9dK-U9-3nl"/>
                         <outlet property="subscribeToNotificationsSwitch" destination="5h5-To-1E0" id="gIy-s4-6hz"/>
                         <outlet property="writeCharacteristicButton" destination="JI2-6A-lfe" id="8Lk-M1-fer"/>
                         <outlet property="writeCharacteristicText" destination="96a-k8-vfr" id="n1o-ZU-xlH"/>

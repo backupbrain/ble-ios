@@ -24,7 +24,7 @@ class GattTableViewCell: UITableViewCell {
     /**
      Render the cell with Characteristic properties
      */
-    func displayCharacteristic(characteristic: CBCharacteristic) {
+    func renderCharacteristic(characteristic: CBCharacteristic) {
         uuidLabel.text = characteristic.uuid.uuidString
         
         let isReadable = BlePeripheral.isCharacteristic(isReadable: characteristic)

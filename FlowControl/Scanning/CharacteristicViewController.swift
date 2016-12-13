@@ -15,7 +15,7 @@ import CoreBluetooth
 class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, BlePeripheralDelegate {
     
     // MARK: UI elements
-    @IBOutlet weak var broadcastNameLabel: UILabel!
+    @IBOutlet weak var advertisedNameLabel: UILabel!
     @IBOutlet weak var identifierLabel: UILabel!
     @IBOutlet weak var characteristicUuidlabel: UILabel!
     @IBOutlet weak var readCharacteristicButton: UIButton!
@@ -23,6 +23,7 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
     @IBOutlet weak var writeCharacteristicButton: UIButton!
     @IBOutlet weak var writeCharacteristicText: UITextField!
     @IBOutlet weak var subscribeToNotificationsSwitch: UISwitch!
+    @IBOutlet weak var subscribeToNotificationLabel: UILabel!
     
     
     // MARK: Connected devices
@@ -32,6 +33,13 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
     
     // Bluetooth Peripheral
     var blePeripheral:BlePeripheral!
+    
+    // Connected Characteristic
+    var connectedService:CBService!
+    
+    // Connected Characteristic
+    var connectedCharacteristic:CBCharacteristic!
+    
 
     /**
      UIView loaded
@@ -40,7 +48,7 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
         super.viewDidLoad()
         
         print("Will connect to device \(blePeripheral.peripheral.identifier.uuidString)")
-        print("Will connect to characteristic \(blePeripheral.connectedCharacteristic.uuid.uuidString)")
+        print("Will connect to characteristic \(connectedCharacteristic.uuid.uuidString)")
         
         centralManager.delegate = self
         blePeripheral.delegate = self
@@ -53,53 +61,53 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
      Load UI elements
      */
     func loadUI() {
-        broadcastNameLabel.text = blePeripheral.broadcastName
+        advertisedNameLabel.text = blePeripheral.advertisedName
         identifierLabel.text = blePeripheral.peripheral.identifier.uuidString
         
-        characteristicUuidlabel.text = blePeripheral.connectedCharacteristic.uuid.uuidString
+        characteristicUuidlabel.text = connectedCharacteristic.uuid.uuidString
         readCharacteristicButton.isEnabled = true
         
         // characteristic is not readable
-        if !BlePeripheral.isCharacteristic(isReadable: blePeripheral.connectedCharacteristic) {
+        if !BlePeripheral.isCharacteristic(isReadable: connectedCharacteristic) {
             readCharacteristicButton.isHidden = true
             characteristicValueText.isHidden = true
         }
         
         // Characterisic is no writeable
-        if !BlePeripheral.isCharacteristic(isWriteable: blePeripheral.connectedCharacteristic) {
+        if !BlePeripheral.isCharacteristic(isWriteable: connectedCharacteristic) {
             writeCharacteristicText.isHidden = true
             writeCharacteristicButton.isHidden = true
         }
         
         // Characterisic is notifiable
-        if BlePeripheral.isCharacteristic(isNotifiable: blePeripheral.connectedCharacteristic) {
-            blePeripheral.subscribeToCharacteristic()
+        if !BlePeripheral.isCharacteristic(isNotifiable: connectedCharacteristic) {
+            subscribeToNotificationsSwitch.isHidden = true
+            subscribeToNotificationLabel.isHidden = true
+        } else {
+            blePeripheral.subscribeTo(characteristic: connectedCharacteristic)
         }
-
-        
         
     }
     
     /**
      User touched Read button.  Request to read the Characteristic
      */
-    @IBAction func onReadCharacteristicButtonTouchUp(_ sender: UIButton) {
+    @IBAction func onReadCharacteristicButtonTouched(_ sender: UIButton) {
         print("pressed button")
         
         readCharacteristicButton.isEnabled = false
-        blePeripheral.readValue()
-        
+        blePeripheral.readValue(from: connectedCharacteristic)
     }
 
     /**
      User touched write button. Request to write to the Characteristic
      */
-    @IBAction func onWriteCharacteristicButtonTouchUp(_ sender: UIButton) {
+    @IBAction func onWriteCharacteristicButtonTouched(_ sender: UIButton) {
         print("write button pressed")
         writeCharacteristicButton.isEnabled = false
         if let stringValue = writeCharacteristicText.text {
             print(stringValue)
-            blePeripheral.writeValue(value: stringValue)
+            blePeripheral.writeValue(value: stringValue, to: connectedCharacteristic)
             writeCharacteristicText.text = ""
         }
     }
@@ -107,13 +115,13 @@ class CharacteristicViewController: UIViewController, CBCentralManagerDelegate, 
     /**
      User toggled the notification switch. Request to subscribe or unsubscribe from the Characteristic
      */
-    @IBAction func onSubscribeToNotificationSwitchTouchUp(_ sender: UISwitch) {
+    @IBAction func onSubscriptionToNotificationSwitchChanged(_ sender: UISwitch) {
         print("Notification Switch toggled")
         subscribeToNotificationsSwitch.isEnabled = false
         if sender.isOn {
-            blePeripheral.subscribeToCharacteristic()
+            blePeripheral.subscribeTo(characteristic: connectedCharacteristic)
         } else {
-            blePeripheral.unsubscribeFromCharacteristic()
+            blePeripheral.unsubscribeFrom(characteristic: connectedCharacteristic)
         }
     }
     

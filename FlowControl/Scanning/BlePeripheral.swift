@@ -40,17 +40,11 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     // connected Peripheral
     var peripheral:CBPeripheral!
     
-    // The Broadcast name of the Perihperal
-    var broadcastName:String!
+    // The Adverstised name of the Perihperal
+    var advertisedName:String!
     
     // The RSSI of the Perpheral
     var rssi:NSNumber!
-    
-    // the currently connected Service
-    var connectedService:CBService!
-    
-    // The currently connected Characteristic
-    var connectedCharacteristic:CBCharacteristic!
 
     // delegate
     var delegate:BlePeripheralDelegate?
@@ -90,7 +84,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
     /**
      Get a broadcast name from an advertisementData packet.  This may be different than the actual broadcast name
      */
-    static func getAlternateBroadcastFromAdvertisementData(advertisementData: [String : Any]) -> String? {
+    static func getNameFromAdvertisementData(advertisementData: [String : Any]) -> String? {
         // grab thekCBAdvDataLocalName from the advertisementData to see if there's an alternate broadcast name
         if advertisementData["kCBAdvDataLocalName"] != nil {
             return (advertisementData["kCBAdvDataLocalName"] as! String)
@@ -98,11 +92,23 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         return nil
     }
     
-    func readValue() {
-        if let connectedCharacteristic = connectedCharacteristic {
-            self.peripheral.readValue(for: connectedCharacteristic)
-        }
+    /**
+     Determine if this peripheral is connectable from it's advertisementData packet.
+     */
+    static func isConnectable(advertisementData: [String: Any]) -> Bool {
+        let isConnectable = advertisementData["kCBAdvDataIsConnectable"] as! Bool
+        return isConnectable
     }
+
+    
+    
+    /**
+     Read from a Characteristic
+     */
+    func readValue(from characteristic: CBCharacteristic) {
+        self.peripheral.readValue(for: characteristic)
+    }
+
     
     
     
@@ -113,7 +119,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      - Parameters:
      - value: the value to write to the connected Characteristic
      */
-    func writeValue(value: String) {
+    func writeValue(value: String, to characteristic: CBCharacteristic) {
         // get the characteristic length
         let writeableValue = value + "\0"
         packetOffset = 0
@@ -121,7 +127,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         // get the data for the current offset
         outboundByteArray = Array(writeableValue.utf8)
         
-        writePartialValue(value: outboundByteArray, offset: packetOffset)
+        writePartialValue(value: outboundByteArray, offset: packetOffset, to: characteristic)
     }
     
     
@@ -133,43 +139,37 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      - offset: the packet offset
      
      */
-    func writePartialValue(value: [UInt8], offset: Int) {
-        if let connectedCharacteristic = connectedCharacteristic {
-            // don't go past the total value size
-            var end =  offset + characteristicLength
-            
-            if end > outboundByteArray.count {
-                end = outboundByteArray.count
-            }
-            
-            
-            let transmissableValue = Data(Array(outboundByteArray[offset..<end]))
-            
-            print("writing partial value:  \(offset)-\(end)")
-            print(transmissableValue)
-            
-            var writeType = CBCharacteristicWriteType.withResponse
-            if BlePeripheral.isCharacteristic(isWriteableWithoutResponse: connectedCharacteristic) {
-                writeType = CBCharacteristicWriteType.withoutResponse
-            }
-            
-            peripheral.writeValue(transmissableValue, for: connectedCharacteristic, type: writeType)
-            print("write request sent")
-        } else {
-            print("no connected characteristic yet")
+    func writePartialValue(value: [UInt8], offset: Int, to characteristic: CBCharacteristic) {
+        // don't go past the total value size
+        var end =  offset + characteristicLength
+        
+        if end > outboundByteArray.count {
+            end = outboundByteArray.count
         }
         
+        
+        let transmissableValue = Data(Array(outboundByteArray[offset..<end]))
+        
+        print("writing partial value:  \(offset)-\(end)")
+        print(transmissableValue)
+        
+        var writeType = CBCharacteristicWriteType.withResponse
+        if BlePeripheral.isCharacteristic(isWriteableWithoutResponse: characteristic) {
+            writeType = CBCharacteristicWriteType.withoutResponse
+        }
+        
+        peripheral.writeValue(transmissableValue, for: characteristic, type: writeType)
+        print("write request sent")
     }
     
-    /**
-    Subscribe to the connected characteristic. 
     
+    /**
+     Subscribe to the connected characteristic.
+     
      When change is successful, delegate.subscriptionStateChanged() called
      */
-    func subscribeToCharacteristic() {
-        if let connectedCharacteristic = connectedCharacteristic {
-            self.peripheral.setNotifyValue(true, for: connectedCharacteristic)
-        }
+    func subscribeTo(characteristic: CBCharacteristic) {
+        self.peripheral.setNotifyValue(true, for: characteristic)
     }
     
     /**
@@ -177,10 +177,8 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      
      When change is successful, delegate.subscriptionStateChanged() called
      */
-    func unsubscribeFromCharacteristic() {
-        if let connectedCharacteristic = connectedCharacteristic {
-            self.peripheral.setNotifyValue(false, for: connectedCharacteristic)
-        }
+    func unsubscribeFrom(characteristic: CBCharacteristic) {
+        self.peripheral.setNotifyValue(false, for: characteristic)
     }
     
     
@@ -272,13 +270,12 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
      Characteristic has been subscribed to or unsubscribed from
      */
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
-        connectedCharacteristic = characteristic
         print("Notification state updated for: \(characteristic.uuid.uuidString)")
         print("New state: \(characteristic.isNotifying)")
         
     
         
-        delegate?.blePeripheral?(subscriptionStateChanged: characteristic.isNotifying, characteristic: connectedCharacteristic, blePeripheral: self)
+        delegate?.blePeripheral?(subscriptionStateChanged: characteristic.isNotifying, characteristic: characteristic, blePeripheral: self)
         
         
         if let errorValue = error {
@@ -323,7 +320,7 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
                 if stringValue == flowControlMessage {
                     packetOffset += characteristicLength
                     if packetOffset < outboundByteArray.count {
-                        writePartialValue(value: outboundByteArray, offset: packetOffset)
+                        writePartialValue(value: outboundByteArray, offset: packetOffset, to: characteristic)
                         
                     } else {
                         print("value write complete")
@@ -366,18 +363,16 @@ class BlePeripheral: NSObject, CBPeripheralDelegate {
         // grab the service
         let serviceIdentifier = service.uuid.uuidString
         
-        
         print("service: \(serviceIdentifier)")
         
-        
         gattProfile.append(service)
-        
         
         if let characteristics = service.characteristics {
             
             print("characteristics found: \(characteristics.count)")
             for characteristic in characteristics {
                 print("-> \(characteristic.uuid.uuidString)")
+                
             }
             
             delegate?.blePerihperal?(discoveredCharacteristics: characteristics, forService: service,blePeripheral: self)
